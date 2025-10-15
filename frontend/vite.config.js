@@ -1,7 +1,33 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
-// https://vite.dev/config/
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(),tailwindcss()],
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis', 
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          buffer: true,
+          process: true,
+        }),
+        NodeModulesPolyfillPlugin(),
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      stream: 'stream-browserify',
+      buffer: 'buffer',
+      process: 'process/browser',
+    },
+  },
+  define: {
+    'process.env': {},
+  },
 })
+
